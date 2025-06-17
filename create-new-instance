@@ -1,5 +1,13 @@
 #! /bin/zsh
 
+# Verify that there are conditions to run
+if [[ -f playbook.db.sql.gz && -f playbook.files.tar.gz ]]; then
+  echo "Database and site files found."
+else
+  echo "Either the database or the site files are missing."
+  exit 1
+fi
+
 # Clone the repository (not using create-project because DDEV is not available at this point yet)
 echo "Cloning the participation playbook repository into ./playbook"
 git clone git@bitbucket.org:matrushka/participation-playbook.git playbook
@@ -30,10 +38,11 @@ fi
 ddev start
 ddev auth ssh
 ddev composer install --prefer-dist
+
+tar -zxvf ../playbook.files.tar.gz -C web/sites/default
+ddev import-db -f ../playbook.db.sql.gz
+
 # ddev pb-site-reinstall
-# TODO:
-# - seed database
-# - seed files
 ddev launch
 ddev drush uli | pbcopy
 
