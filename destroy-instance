@@ -1,0 +1,23 @@
+#! /bin/zsh
+
+# Ask the user for permission to destroy the existing instance 
+read "destroy?Are you OK with destroying the site instance found in ./playbook? [Y/n]"
+case $destroy in
+  [nN][oO]|[nN])
+    echo "Ok. No destruction, no construction. Aborting the mission."
+    exit 0
+    ;;
+  [yY][eE][sS]|[yY]|"")
+    echo "Yeehaw! [grabs sledgehammer]"
+    ;;
+esac
+
+if [ -d "playbook" ]; then
+  echo "Destroying the DDEV instance and ommitting snapshots."
+  existing="playbook-`cat playbook/instance-id`"
+  ddev delete $existing --omit-snapshot --yes
+
+  echo "Deleting the files"
+  rm -rf playbook
+fi
+

@@ -1,0 +1,4 @@
+#! /bin/zsh
+
+./destroy-instance
+./create-new-instance

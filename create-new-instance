@@ -1,0 +1,40 @@
+#! /bin/zsh
+
+# Clone the repository (not using create-project because DDEV is not available at this point yet)
+echo "Cloning the participation playbook repository into ./playbook"
+git clone git@bitbucket.org:matrushka/participation-playbook.git playbook
+
+branch_arg="$1"
+test_branch="drupal-10"
+
+if [[ "$branch_arg" ]]; then
+    test_branch="$branch_arg"
+    echo "Test branch will be $test_branch"
+fi
+
+
+cd playbook
+git checkout "$test_branch"
+
+# Replace the site name with a random string in .ddev/config.yml
+instance_id=`xxd -l 8 -c 8 -p < /dev/random`
+echo $instance_id > instance-id
+
+echo "Replacing the site name in .ddev/config.yaml with pretty gibberish: ({$instance_id})."
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  sed -i '' "s/playbook/playbook-${instance_id}/g" .ddev/config.yaml
+else
+  sed -i "s/playbook/playbook-${instance_id}/g" .ddev/config.yaml
+fi
+
+ddev start
+ddev auth ssh
+ddev composer install --prefer-dist
+# ddev pb-site-reinstall
+# TODO:
+# - seed database
+# - seed files
+ddev launch
+ddev drush uli | pbcopy
+
+echo "The login URL for admin was copied to the clipboard."
