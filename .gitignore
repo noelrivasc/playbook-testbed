@@ -1,3 +1,4 @@
 playbook
 *.tar.gz
 *.sql.gz
+node_modules
