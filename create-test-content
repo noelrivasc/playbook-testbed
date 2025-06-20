@@ -1,0 +1,16 @@
+#! /bin/zsh
+
+cd playbook
+
+ddev drush en participation_playbook_test
+ddev drush cr
+
+ddev drush ppt-full-stand-alone
+
+ddev drush ppt-full-keystone
+ddev drush ppt-full-component component_a
+ddev drush ppt-full-component component_b
+ddev drush ppt-full-component component_c
+
+ddev drush ppt-full-process-template "default_process_code" "component_a,component_b"
+ddev drush ppt-full-process-template "alternative_process_code" "component_b,component_c"
