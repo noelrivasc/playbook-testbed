@@ -10,7 +10,7 @@ fi
 
 # Clone the repository (not using create-project because DDEV is not available at this point yet)
 echo "Cloning the participation playbook repository into ./playbook"
-git clone git@bitbucket.org:matrushka/participation-playbook.git playbook
+git clone git@github.com:noelrivasc/participation-playbook.git playbook
 
 branch_arg="$1"
 test_branch="drupal-10"
