@@ -1,0 +1,6 @@
+#! /bin/zsh
+
+cd playbook
+ddev composer require --dev drupal/upgrade_status --prefer-dist
+ddev drush en upgrade_status
+ddev drush cr
