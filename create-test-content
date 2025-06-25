@@ -14,3 +14,15 @@ ddev drush ppt-full-component component_c
 
 ddev drush ppt-full-process-template "default_process_code" "component_a,component_b"
 ddev drush ppt-full-process-template "alternative_process_code" "component_b,component_c"
+
+read "disable?Do you want to disable the participation_playbook_test module? [Y/n]"
+case $disable in
+  [nN][oO]|[nN])
+    echo "Ok. Keeping the module enabled."
+    exit 0
+    ;;
+  [yY][eE][sS]|[yY]|"")
+    ddev drush pmu participation_playbook_test
+    echo "The module will be disabled."
+    ;;
+esac
