@@ -1,0 +1,6 @@
+#! /bin/zsh
+
+cd playbook
+ddev drush pmu upgrade_status
+ddev composer remove --dev drupal/upgrade_status
+ddev drush cr
