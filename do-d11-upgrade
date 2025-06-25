@@ -1,0 +1,11 @@
+#! /bin/zsh
+
+./destroy-instance
+./create-new-instance d11-preparation
+
+cd playbook
+ddev drush updb --yes
+echo "Config sync directory:"
+ddev drush sget config_sync_directory
+
+ddev drush cim --yes
