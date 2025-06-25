@@ -1,0 +1,9 @@
+#! /bin/zsh
+
+./destroy-instance
+./create-new-instance d11-preparation
+
+cd playbook
+
+ddev drush updb --yes
+ddev drush cim --yes
