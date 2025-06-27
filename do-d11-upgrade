@@ -45,3 +45,16 @@ ddev composer remove drupal/node_view_permissions --no-update
 ddev composer update --dry-run
 
 ddev composer update
+
+patch < composer.json.inline-repositories.patch
+
+echo "Requiring packages that depend on inline package definition."
+ddev composer require drupal/passwordless:^2.0@beta
+ddev composer require drupal/node_view_permissions:^1.6
+
+ddev drush updb --yes
+ddev drush cex --yes
+
+chmod 755 web/sites/default
+chmod 644 web/sites/default/*settings.php
+chmod 644 web/sites/default/*services.yml
