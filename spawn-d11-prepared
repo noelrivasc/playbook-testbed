@@ -1,9 +1,20 @@
 #! /bin/zsh
 
 ./destroy-instance
-./create-new-instance d11-preparation
+./create-new-instance d11-preparation skip-import
 
 cd playbook
 
+ddev stop --remove-data --omit-snapshot
+ddev config --database=mariadb:10.6
+ddev config --php-version=8.3
+ddev config --project-type=drupal10
+ddev start
+
+
+ddev import-db -f ../playbook.mariadb-10.6.db.sql.gz
+
+../set-config-directory
+cat web/sites/default/settings.ddev.php| grep sync
 ddev drush updb --yes
 ddev drush cim --yes

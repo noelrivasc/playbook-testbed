@@ -1,11 +1,47 @@
 #! /bin/zsh
 
-./destroy-instance
-./create-new-instance d11-preparation
+read "dependencies_ready?The upgrade is only possible if the server is running MariaDB 10.6 and PHP 8.3. Are those ready? [Y/n]"
+case $destroy in
+  [nN][oO]|[nN])
+    echo "Fix that first."
+    exit 0
+    ;;
+  [yY][eE][sS]|[yY]|"")
+    echo "Ok. Let's go!"
+    ;;
+esac
 
 cd playbook
-ddev drush updb --yes
-echo "Config sync directory:"
-ddev drush sget config_sync_directory
 
-ddev drush cim --yes
+# Remove disabled modules
+ddev composer remove --dev drupal/mix
+ddev composer remove drupal/coffee
+ddev composer remove drupal/ckeditor_div_manager
+ddev composer remove drupal/url_embed
+ddev composer remove drupal/ckeditor
+ddev composer remove drupal/config_filter
+
+# Following upgrade guide from https://www.drupal.org/docs/upgrading-drupal/upgrading-from-drupal-8-or-later/how-to-upgrade-from-drupal-10-to-drupal-11#s-4-upgrade-to-drupal-11
+
+chmod 777 web/sites/default
+chmod 666 web/sites/default/*settings.php
+chmod 666 web/sites/default/*services.yml
+
+# We use --no-update to avoid a chicken-and-egg problem with mutual dependencies:
+ddev composer require 'drupal/core-recommended:^11.2.2' \
+                 'drupal/core-composer-scaffold:^11.2.2' \
+                 'drupal/core-project-message:^11.2.2' --no-update
+
+# Remove explicit core requirement; it's brought by core-recommended
+ddev composer remove drupal/core --no-update
+
+ddev composer require 'drush/drush:^13' --no-update
+
+# Temporary removes. Upgrade first, then figure out how to bring them back to life.
+ddev composer remove --dev phpunit/phpunit --no-update
+ddev composer remove drupal/passwordless --no-update
+ddev composer remove drupal/node_view_permissions --no-update
+
+ddev composer update --dry-run
+
+ddev composer update

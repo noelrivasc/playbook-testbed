@@ -20,6 +20,8 @@ if [[ "$branch_arg" ]]; then
     echo "Test branch will be $test_branch"
 fi
 
+skip_db_import_arg="$2"
+
 
 cd playbook
 git checkout "$test_branch"
@@ -42,18 +44,15 @@ ddev composer install --prefer-dist
 echo "Uncompressing site files from playbook.file.tar.gz to web/sites/default/"
 tar -zxvf ../playbook.files.tar.gz -C web/sites/default >/dev/null 2>&1
 
-echo "Importing database from playbook.db.sql.gz"
-ddev import-db -f ../playbook.db.sql.gz
-
-ddev launch
-ddev drush uli | pbcopy
+if [[ "$skip_db_import_arg" ]]; then
+    echo "We will skip importing the default database."
+else
+    echo "Importing database from playbook.db.sql.gz"
+    ddev import-db -f ../playbook.db.sql.gz
+    ddev launch
+    ddev drush uli | pbcopy
+fi
 
 echo "The login URL for admin was copied to the clipboard."
 
-echo "Setting up ../config/sync as the configuration directory in settings.ddev.php"
-while [ ! -f web/sites/default/settings.ddev.php ]; do
-  echo "Waiting for settings.ddev.php to be created..."
-  sleep 0.1
-done
-sed -i '' "s|sites/default/files/sync|../config/sync|g" web/sites/default/settings.ddev.php
-
+../set-config-directory
