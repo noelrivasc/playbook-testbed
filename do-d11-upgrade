@@ -55,6 +55,9 @@ ddev composer require drupal/node_view_permissions:^1.6
 ddev drush updb --yes
 ddev drush cex --yes
 
+ddev drush webform-libraries-download
+ddev drush cvjld #clientside_validation jquery library download
+
 chmod 755 web/sites/default
 chmod 644 web/sites/default/*settings.php
 chmod 644 web/sites/default/*services.yml
